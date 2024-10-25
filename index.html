@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customize Your Certificate</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://js.stripe.com/v3/"></script>
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center mb-5">Customize Your Certificate</h1>
+
+        <form action="/" method="POST" enctype="multipart/form-data" class="form-group">
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" class="form-control" required>
+
+            <label for="course" class="mt-3">Course Name:</label>
+            <input type="text" id="course" name="course" class="form-control" required>
+
+            <label for="template" class="mt-3">Upload Certificate Template:</label>
+            <input type="file" id="template" name="template" class="form-control" accept="image/*">
+
+            <label for="card-element" class="mt-3">Credit Card:</label>
+            <div id="card-element" class="form-control"></div>
+            <div id="card-errors" role="alert" class="text-danger mt-2"></div>
+
+            <button type="submit" class="btn btn-success btn-block mt-4">Pay & Generate Certificate</button>
+        </form>
+    </div>
+
+    <script>
+        var stripe = Stripe('{{ key }}');
+        var elements = stripe.elements();
+        var card = elements.create('card');
+        card.mount('#card-element');
+
+        card.on('change', function(event) {
+            var displayError = document.getElementById('card-errors');
+            if (event.error) {
+                displayError.textContent = event.error.message;
+            } else {
+                displayError.textContent = '';
+            }
+        });
+
+        var form = document.querySelector('form');
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            stripe.createToken(card).then(function(result) {
+                if (result.error) {
+                    var errorElement = document.getElementById('card-errors');
+                    errorElement.textContent = result.error.message;
+                } else {
+                    var hiddenInput = document.createElement('input');
+                    hiddenInput.setAttribute('type', 'hidden');
+                    hiddenInput.setAttribute('name', 'stripeToken');
+                    hiddenInput.setAttribute('value', result.token.id);
+                    form.appendChild(hiddenInput);
+                    form.submit();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center mb-5">Login</h1>
+        <form action="/login" method="POST" class="form-group">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" class="form-control" required>
+
+            <label for="password" class="mt-3">Password:</label>
+            <input type="password" id="password" name="password" class="form-control" required>
+
+            <button type="submit" class="btn btn-primary btn-block mt-4">Login</button>
+            <p class="text-center mt-3">Don't have an account? <a href="/signup">Signup here</a></p>
+        </form>
+    </div>
+</body>
+</html>
